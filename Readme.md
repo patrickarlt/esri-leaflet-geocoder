@@ -37,7 +37,7 @@ Take a look at the live demo at http://esri.github.io/esri-leaflet-geocoder/
     </style>
 
     <script src="dist/esri-leaflet-geocoder.js"></script>
-    <link rel="stylesheet" href="distA/esri-leaflet-geocoder.css" />
+    <link rel="stylesheet" href="dist/esri-leaflet-geocoder.css" />
 
   </head>
   <body>
@@ -80,8 +80,8 @@ Option | Type | Default | Description
 `expanded` | `Boolean` | `true` | Start the control in an expanded state.
 `containerClass` | `String` | `"geocoder-control"` | Used for styling the geocoder. See the [styling guide](#Styling) for more details.
 `inputClass` | `String` | `"geocoder-control-input"` | Used for styling the geocoder. See the [styling guide](#Styling) for more details.
-`suggestionsWrapperClass` | `String` | `"geocoder-control-suggestions"`` | Used for styling the geocoder. See the [styling guide](#Styling) for more details.
-`selectedSuggestionClass` | `String` | `"geocoder-control-selected"`` | Used for styling the geocoder. See the [styling guide](#Styling) for more details.
+`suggestionsWrapperClass` | `String` | `"geocoder-control-suggestions"` | Used for styling the geocoder. See the [styling guide](#Styling) for more details.
+`selectedSuggestionClass` | `String` | `"geocoder-control-selected"` | Used for styling the geocoder. See the [styling guide](#Styling) for more details.
 `expandedClass` | `String` | `"geocoder-control-expanded"` | Used for styling the geocoder. See the [styling guide](#Styling) for more details.
 
 ### Methods
