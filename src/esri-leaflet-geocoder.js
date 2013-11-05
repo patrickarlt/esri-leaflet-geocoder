@@ -209,7 +209,8 @@
       }, this);
 
       L.DomEvent.addListener(this._suggestions, "mousedown", function(e){
-        this._geocode(e.target.innerHTML, e.target["data-magic-key"]);
+        var suggestionItem = e.target || e.srcElement;
+        this._geocode(suggestionItem.innerHTML, suggestionItem["data-magic-key"]);
         this.clear();
       }, this);
 
@@ -256,7 +257,7 @@
 
       L.DomEvent.addListener(this._input, "keyup", function(e){
         if(e.keyCode !== 13 && e.keyCode !== 38 && e.keyCode !== 40){
-          this._suggest(e.target.value);
+          this._suggest((e.target || e.srcElement).value);
         }
       }, this);
 
