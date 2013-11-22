@@ -1,10 +1,10 @@
 # Esri Leaflet Geocoder
 
-The Esri Leaflet Geocoder is a small series of API helpers and UI controls to interact with ArcGIS Onlines geocoding services.
+The Esri Leaflet Geocoder is a small series of API helpers and UI controls to interact with the ArcGIS Online geocoding services.
 
 **Currently Esri Leaflet Geocoder is in development. Use at your own risk.**
 
-Despite sharing a name and a namespace with Esri Leaflet, Esri Leaflet Geocoder **does not*** require Esri Leaflet. It is however tested with Esri Leaflet and will work just fine with our without it.
+Despite sharing a name and a namespace with Esri Leaflet, Esri Leaflet Geocoder **does not** require Esri Leaflet. It is however tested with Esri Leaflet and will work just fine with our without it.
 
 ## Example
 
@@ -41,18 +41,30 @@ Take a look at the live demo at http://esri.github.io/esri-leaflet-geocoder/
 
   </head>
   <body>
+
     <div id="map"></div>
 
+    <a href="https://github.com/Esri/esri-leaflet-geocoder"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
+
     <script>
-      var map = L.map('map').setView([45.5165, -122.6764], 11);
+      var map = L.map('map').setView([45.5165, -122.6764], 12);
 
       var tiles = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
       var searchControl = new L.esri.Controls.Geosearch().addTo(map);
 
-      searchControl.on("result", function(result){
-        // Do stuff with the result
-        console.log(result);
+      var results = new L.LayerGroup().addTo(map);
+
+      searchControl.on("result", function(data){
+        results.clearLayers();
+        results.addLayer(L.marker(data.latlng));
+      });
+
+      searchControl.on("results", function(data){
+        results.clearLayers();
+        for (var i = data.results.length - 1; i >= 0; i--) {
+          results.addLayer(L.marker(data.results[i].latlng));
+        };
       });
     </script>
   </body>
@@ -75,9 +87,14 @@ Option | Type | Default | Description
 --- | --- | --- | ---
 `position` | `String` | `topleft` | On of the valid Leaflet [control positions](http://leafletjs.com/reference.html#control-positions).
 `zoomToResult` | `Boolean` | `true` | If `true` the map will zoom the result after geocoding is complete.
-`useMapBounds` | `Boolean` or <br> `Integer` | `11` | Determines if the geocoder should begin using the bounds of the map to enchance search results. If `true` the geocoder will always return results in the current map bounds. If `false` it will always search the world. If an integer like `11` is passed in a search will use the bounds of the map for searhcing is the map is at a zoom level equal or greater then the integer.
+`useMapBounds` | `Boolean` or <br> `Integer` | `11` | Determines if the geocoder should begin using the bounds of the map to enchance search results. If `true` the geocoder will always return results in the current map bounds. If `false` it will always search the world. If an integer like `11` is passed in a search will use the bounds of the map for searching if the map is at a zoom level equal or greater than the integer.
 `collapseAfterResult` | `Boolean` | `true` | If the geocoder is expanded after a result this will collapse it.
+<<<<<<< HEAD:Readme.md
 `expanded` | `Boolean` | `true` | Start the control in an expanded state.
+`allowMultipleResults` | `true` | When a user hits enter without selecting a suggestion their text will be geocoded within the current bounds of the map. A `results` event will fire with multuiple results. If this is `false` the first suggestion will be used.
+=======
+`expanded` | `Boolean` | `false` | Start the control in an expanded state.
+>>>>>>> f67d5ff836b083f4917feac0594a0f8237eb408f:README.md
 `containerClass` | `String` | `"geocoder-control"` | Used for styling the geocoder. See the [styling guide](#Styling) for more details.
 `inputClass` | `String` | `"geocoder-control-input"` | Used for styling the geocoder. See the [styling guide](#Styling) for more details.
 `suggestionsWrapperClass` | `String` | `"geocoder-control-suggestions"` | Used for styling the geocoder. See the [styling guide](#Styling) for more details.
@@ -96,7 +113,7 @@ Event | Data | Description
 --- | --- | ---
 `load` | `null` | A generic event fired when a request to the geocoder starts.
 `loading` | `null` | A generic event fired when a request to the geocoder finished.
-`result` | [`<ResultEvent>`](#result-event) | Fired when a result is returned from the geocoder.
+`result` | [`<ResultEvent>`](#result-event--object) | Fired when a result is returned from the geocoder.
 
 ### Styling
 
@@ -131,6 +148,14 @@ Property | Type | Description
 `city` | `String` | The city the geocoded place is located in
 `address` | `String` | Complete address returned for the geocoded place. The format is based on address standards for the country within which the address is located.
 
+#### Results Event / Object
+
+Property | Type | Description
+--- | --- | ---
+`bounds` | [`L.LatLngBounds`](http://leafletjs.com/reference.html#latlngbounds)| The bounds arround this suggestion. Good for zooming to results like cities and states.
+`latlng` | [`L.LatLng`](http://leafletjs.com/reference.html#latlng)| The center of the result.
+`results` | [`<ResultObject>`](#result-event--object) | An array of [result objects](#result-event--object).
+
 ## L.esri.Services.Geocoding
 A basic wrapper for ArcGIS Online geocoding services. Used internally by `L.esri.Controls.Geosearch`.
 
@@ -138,21 +163,21 @@ A basic wrapper for ArcGIS Online geocoding services. Used internally by `L.esri
 
 Constructor | Options | Description
 --- | --- | ---
-`new L.esri.Controls.Geosearch(options)`<br>`L.esri.Controls.geosearch(options)` | [`<GeosearchOptions>`](#options-1) | Creates a new Geosearch control.
+`new L.esri.Services.Geocoding(options)`<br>`L.esri.Controls.geosearch(options)` | [`<GeosearchOptions>`](#options-1) | Creates a new Geosearch control.
 
 ### Options
 
 Option | Type | Default | Description
 --- | --- | --- | ---
-`url` | `String` | `<WorldGeocodeServiceURL>` | Defaults to the ArcGIS World Geocoding service. Should be the url of the Geocoding service you want to use. If you don't this means don't change this.
+`url` | `String` | `<WorldGeocodeServiceURL>` | Defaults to the ArcGIS World Geocoding service.
 `outFields`| `String` | "Subregion, Region, PlaceName, Match_addr, Country, Addr_type, City" | 
 
 ### Methods
 
 Method | Options | Description
 --- | --- | ---
-`geocode(text, object, callback)` | [`<GeocodeOptions>`](#geocode-options) | Geocodes the specified `text` with the passed [`<GeocodeOptions>``](#geocode-options). `callback` will be called with `error` and `response` parameters.
-`suggest(text, object, callback)` | [`<SuggestOptions>`](#geocode-options) | Suggests results for `text` with the given [`<SuggestOptions>`](#suggest-options). `callback` will be called with `error` and `response` parameters.
+`geocode(text, object, callback)` | [`<GeocodeOptions>`](#geocode-options) | Geocodes the specified `text` with the passed [`<GeocodeOptions>``](#geocode-options). `callback` will be called `response` as the first parameter.
+`suggest(text, object, callback)` | [`<SuggestOptions>`](#geocode-options) | Suggests results for `text` with the given [`<SuggestOptions>`](#suggest-options). `callback` will be called with `response` as the first parameter.
 
 ### Events
 
@@ -179,7 +204,7 @@ The `suggest` method can accept any options from the [Suggest service](http://re
 
 ## Dependencies
 
-Despite sharing a name and a namespace the Esri Leaflet Geocoder **does not*** require Esri Leaflet. It only requires [Leaflet](http://leaflet.com).
+Despite sharing a name and a namespace the Esri Leaflet Geocoder **does not** require Esri Leaflet. It only requires [Leaflet](http://leaflet.com).
 
 ## Resources
 
@@ -197,6 +222,16 @@ Find a bug or want to request a new feature?  Please let us know by submitting a
 
 Esri welcomes contributions from anyone and everyone. Please see our [guidelines for contributing](https://github.com/esri/contributing).
 
+## Terms and Conditions
+
+In order the use the ArcGIS Online Geocoding Service you should signup for an [ArcGIS for Developers account](https://developers.arcgis.com/en/plans) or purchase an [ArcGIS Online Organizational Subscription](http://www.arcgis.com/features/plans/pricing.html).
+
+1. Once you have an account you are good to go. Thats it!
+2. Your users can search for as many places as they want. Esri defines this as "Geosearch" and its free. You only consume credits when you want to store the result of geocodes.
+3. You are not allowed to store the results of any geocoding you do. There is a `forStorage` flag which you can set that will allow this. There is an [issue](https://github.com/Esri/esri-leaflet-geocoder/issues/10) for including the `forStorage` flag
+4. If you use this library in a revenue generating application or for goverment use you must upgrade to a paid account. You are not allowed to generate revenue while on a free plan.
+
+This information is from the [ArcGIS for Developers Terms of Use FAQ](https://developers.arcgis.com/en/terms/faq/) and the [ArcGIS Online World Geocoder documentation](http://resources.arcgis.com/en/help/arcgis-rest-api/#/Single_input_field_geocoding/02r300000015000000/)
 
 ## Licensing
 Copyright 2013 Esri
